@@ -1,8 +1,38 @@
 "use client";
 
+import { useRef } from "react";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 
 export default function Home() {
+  const formRef = useRef(null);
+
+  const sendForm = async (e) => {
+    e.preventDefault();
+
+    try {
+      // 1️⃣ Send Email via EmailJS
+       await emailjs.sendForm(
+        "service_q6kww7l",
+        "template_9diwl88",
+        formRef.current,
+        "aEh32CuuIa3e4VJIl"
+       );
+
+      // 2️⃣ Send backup to Google Sheets
+      await fetch("https://script.google.com/macros/s/AKfycbxB22A5xbIIBBoUKJrEE7MC57oRS07kbo6RG0e4i_jnLukHhBK_6_Ex3OZ8CCDqqlDJoA/exec", {
+        method: "POST",
+        body: new FormData(formRef.current),
+      });
+
+      alert("Delivery request submitted successfully.");
+      formRef.current.reset();
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <main className="min-h-screen bg-black text-white">
       <section className="flex flex-col items-center justify-center text-center px-6 py-32">
@@ -16,7 +46,7 @@ export default function Home() {
         </motion.h1>
 
         <p className="text-lg md:text-xl max-w-2xl text-gray-300 mb-8">
-          Premium cannabis delivery across the DMV.
+          Premium cannabis delivery: Now Serving Montgomery County.
         </p>
 
         <a
@@ -32,26 +62,36 @@ export default function Home() {
           Request Delivery
         </h2>
 
-        <form className="max-w-xl mx-auto space-y-6">
+        <form
+          ref={formRef}
+          onSubmit={sendForm}
+          className="max-w-xl mx-auto space-y-6"
+        >
           <input
+            name="name"
             className="w-full p-3 rounded-xl bg-black border border-zinc-800"
             placeholder="Full Name"
             required
           />
 
           <input
+            name="phone"
             className="w-full p-3 rounded-xl bg-black border border-zinc-800"
             placeholder="Phone Number"
             required
           />
 
           <input
+            name="location"
             className="w-full p-3 rounded-xl bg-black border border-zinc-800"
             placeholder="City / County"
             required
           />
 
-          <select className="w-full p-3 rounded-xl bg-black border border-zinc-800">
+          <select
+            name="timeframe"
+            className="w-full p-3 rounded-xl bg-black border border-zinc-800"
+          >
             <option>ASAP</option>
             <option>Within 1 hour</option>
             <option>Later today</option>
