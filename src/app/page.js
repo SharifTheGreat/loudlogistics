@@ -25,7 +25,9 @@ export default function Home() {
         body: new FormData(formRef.current),
       });
 
-      alert("Delivery request submitted successfully.");
+      alert(
+  "✅ Delivery Request Received.\n\nA Loud Logistics specialist will text you shortly. Please keep your phone nearby."
+);
       formRef.current.reset();
     } catch (error) {
       console.error(error);
