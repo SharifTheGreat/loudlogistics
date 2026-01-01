@@ -1,112 +1,117 @@
 "use client";
 
-import { useRef } from "react";
-import { motion } from "framer-motion";
-import emailjs from "@emailjs/browser";
+import { useState } from "react";
 
 export default function Home() {
-  const formRef = useRef(null);
+  const [loading, setLoading] = useState(false);
 
-  const sendForm = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.target);
 
     try {
-      // 1️⃣ Send Email via EmailJS
-       await emailjs.sendForm(
-        "service_q6kww7l",
-        "template_9diwl88",
-        formRef.current,
-        "aEh32CuuIa3e4VJIl"
-       );
-
-      // 2️⃣ Send backup to Google Sheets
-      await fetch("https://script.google.com/macros/s/AKfycbxB22A5xbIIBBoUKJrEE7MC57oRS07kbo6RG0e4i_jnLukHhBK_6_Ex3OZ8CCDqqlDJoA/exec", {
+      await fetch("/api/interest", {
         method: "POST",
-        body: new FormData(formRef.current),
+        body: formData,
       });
 
       alert(
-  "✅ Delivery Request Received.\n\nA Loud Logistics specialist will text you shortly. Please keep your phone nearby."
-);
-      formRef.current.reset();
+        "You’re on the list. We’re handling the legal side now, and a logistics specialist will reach out as soon as Loud Logistics is cleared to operate. Thanks for riding with us."
+      );
+
+      e.target.reset();
     } catch (error) {
-      console.error(error);
       alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-black text-white">
-      <section className="flex flex-col items-center justify-center text-center px-6 py-32">
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-5xl md:text-7xl font-bold mb-6"
-        >
-          Loud Logistics
-        </motion.h1>
-
-        <p className="text-lg md:text-xl max-w-2xl text-gray-300 mb-8">
-          Premium cannabis delivery: Now Serving Montgomery County.
+    <main className="min-h-screen bg-black text-white flex flex-col items-center px-6 py-16">
+      {/* Hero */}
+      <section className="max-w-2xl text-center">
+        <h1 className="text-4xl md:text-5xl font-bold mb-6">
+          🚓 The Laws Pulled Us Over
+        </h1>
+        <p className="text-lg md:text-xl text-gray-300 mb-4">
+          Loud Logistics is getting its paperwork right.
         </p>
-
-        <a
-          href="#request"
-          className="rounded-2xl px-8 py-4 bg-white text-black font-semibold"
-        >
-          Request Delivery
-        </a>
+        <p className="text-gray-400 mb-8">
+          Join the interest list and we’ll reach out the moment we’re cleared for
+          takeoff.
+        </p>
       </section>
 
-      <section id="request" className="px-6 py-24 bg-zinc-900">
-        <h2 className="text-3xl font-semibold text-center mb-10">
-          Request Delivery
-        </h2>
+      {/* How It Works */}
+      <section className="max-w-xl w-full bg-zinc-900 rounded-xl p-6 mb-10">
+        <h2 className="text-xl font-semibold mb-4">What’s Going On?</h2>
+        <ol className="space-y-2 text-gray-300">
+          <li>1. We’re completing state licensing requirements</li>
+          <li>2. You join the interest list</li>
+          <li>3. We notify you when Loud Logistics is officially live</li>
+        </ol>
+        <p className="text-sm text-gray-400 mt-4">
+          This helps us launch in the right areas first.
+        </p>
+      </section>
 
-        <form
-          ref={formRef}
-          onSubmit={sendForm}
-          className="max-w-xl mx-auto space-y-6"
-        >
+      {/* Interest Form */}
+      <section className="max-w-xl w-full bg-zinc-900 rounded-xl p-6">
+        <h2 className="text-xl font-semibold mb-4">Join the Interest List</h2>
+        <p className="text-gray-400 mb-6">
+          Tell us where you’re located. Contact info is optional, but recommended
+          for early access.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
-            name="name"
-            className="w-full p-3 rounded-xl bg-black border border-zinc-800"
-            placeholder="Full Name"
+            type="text"
+            name="area"
+            placeholder="What area are you in?"
             required
+            className="w-full p-3 rounded text-black"
           />
 
           <input
+            type="email"
+            name="email"
+            placeholder="Email (optional – updates & early access)"
+            className="w-full p-3 rounded text-black"
+          />
+
+          <input
+            type="tel"
             name="phone"
-            className="w-full p-3 rounded-xl bg-black border border-zinc-800"
-            placeholder="Phone Number"
-            required
+            placeholder="Phone (optional – text when we go live)"
+            className="w-full p-3 rounded text-black"
           />
 
-          <input
-            name="location"
-            className="w-full p-3 rounded-xl bg-black border border-zinc-800"
-            placeholder="City / County"
-            required
+          <textarea
+            name="note"
+            placeholder="Anything you want us to know?"
+            className="w-full p-3 rounded text-black"
+            rows={3}
           />
-
-          <select
-            name="timeframe"
-            className="w-full p-3 rounded-xl bg-black border border-zinc-800"
-          >
-            <option>ASAP</option>
-            <option>Within 1 hour</option>
-            <option>Later today</option>
-          </select>
 
           <button
             type="submit"
-            className="w-full py-4 rounded-2xl bg-white text-black font-semibold"
+            disabled={loading}
+            className="w-full bg-green-600 hover:bg-green-700 transition py-3 rounded font-semibold disabled:opacity-50"
           >
-            Submit Request
+            {loading ? "Submitting…" : "Keep Me in the Loop"}
           </button>
         </form>
       </section>
+
+      {/* Footer Disclaimer */}
+      <footer className="max-w-xl text-center text-xs text-gray-500 mt-10">
+        Loud Logistics does not currently offer delivery services. This site
+        collects interest only and does not facilitate cannabis sales or
+        transportation.
+      </footer>
     </main>
   );
 }
