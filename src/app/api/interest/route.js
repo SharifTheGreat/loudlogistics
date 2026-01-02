@@ -2,10 +2,14 @@ export async function POST(request) {
   try {
     const formData = await request.formData();
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwRYKU2feRj0MlKTK6he_yM0CRzEjWWuE_rp7Pvdn-BKb456AQsJAbNqqJMgQ8UFRMokg/exec", {
-      method: "POST",
-      body: formData,
-    });
+   const response = await fetch(
+  "https://script.google.com/macros/s/AKfycbwRYKU2feRj0MlKTK6he_yM0CRzEjWWuE_rp7Pvdn-BKb456AQsJAbNqqJMgQ8UFRMokg/exec",
+  {
+    method: "POST",
+    body: formData,
+  }
+);
+
 
     if (!response.ok) {
       throw new Error("Google Script failed");
