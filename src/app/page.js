@@ -13,7 +13,7 @@ export default function Home() {
     setLoading(true);
 
     try {
-      await fetch("https://script.google.com/macros/s/AKfycbwRYKU2feRj0MlKTK6he_yM0CRzEjWWuE_rp7Pvdn-BKb456AQsJAbNqqJMgQ8UFRMokg/execOGLE_APPS_SCRIPT_URL_HERE", {
+      await fetch("https://script.google.com/macros/s/AKfycbwRYKU2feRj0MlKTK6he_yM0CRzEjWWuE_rp7Pvdn-BKb456AQsJAbNqqJMgQ8UFRMokg/exec", {
         method: "POST",
         body: new FormData(formRef.current),
       });
@@ -85,6 +85,7 @@ export default function Home() {
                     What area are you in?
                   </label>
                   <input
+                    type="text"
                     name="area"
                     required
                     placeholder="City or neighborhood"
